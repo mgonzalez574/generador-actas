@@ -43,8 +43,23 @@ def add_bullet(doc, text, size=10):
     set_font(run, size=size)
     return p
 
+def add_hrule(doc):
+    p = doc.add_paragraph()
+    p.paragraph_format.space_before = Pt(0)
+    p.paragraph_format.space_after = Pt(2)
+    pPr = p._p.get_or_add_pPr()
+    pBdr = OxmlElement("w:pBdr")
+    bottom = OxmlElement("w:bottom")
+    bottom.set(qn("w:val"), "single")
+    bottom.set(qn("w:sz"), "6")
+    bottom.set(qn("w:space"), "1")
+    bottom.set(qn("w:color"), "000000")
+    pBdr.append(bottom)
+    pPr.append(pBdr)
+
 def add_section_title(doc, text):
-    add_paragraph(doc, text, bold=True, size=10, space_before=6, space_after=2)
+    add_paragraph(doc, text, bold=True, size=10, space_before=6, space_after=0)
+    add_hrule(doc)
 
 def build_docx(acta, participantes, empresa, elaborado_por):
     doc = Document()
@@ -74,30 +89,43 @@ def build_docx(acta, participantes, empresa, elaborado_por):
     style.font.size = Pt(10)
 
     # Título
-    t = add_paragraph(doc, "ACTA DE REUNIÓN", bold=True, size=10,
-                      align=WD_ALIGN_PARAGRAPH.CENTER, space_after=8)
+    t = add_paragraph(doc, "ACTA DE REUNIÓN", bold=True, size=12,
+                      align=WD_ALIGN_PARAGRAPH.CENTER, space_after=12)
 
     # Tabla de encabezado
     tabla = doc.add_table(rows=5, cols=2)
-    tabla.style = "Table Grid"
+    tabla.style = "Table Normal"
     campos = [
-        ("Empresa", empresa),
-        ("Fecha", acta.get("fecha") or "No determinada"),
-        ("Hora inicio / fin", f"{acta.get('hora_inicio') or '—'} / {acta.get('hora_fin') or '—'}"),
-        ("Lugar / Modalidad", acta.get("modalidad") or "No determinada"),
-        ("Elaborada por", elaborado_por),
+        ("Empresa:", empresa),
+        ("Fecha:", acta.get("fecha") or "No determinada"),
+        ("Hora inicio / fin:", f"{acta.get('hora_inicio') or '—'} / {acta.get('hora_fin') or '—'}"),
+        ("Lugar / Modalidad:", acta.get("modalidad") or "No determinada"),
+        ("Elaborada por:", elaborado_por),
     ]
     for i, (k, v) in enumerate(campos):
-        c0, c1 = tabla.rows[i].cells
-        c0.width = Cm(5)
+        row = tabla.rows[i]
+        # Altura de fila 0.5 cm
+        trHeight = OxmlElement("w:trHeight")
+        trHeight.set(qn("w:val"), "284")  # 0.5 cm en twips (1 cm = 567 twips)
+        trHeight.set(qn("w:hRule"), "exact")
+        row._tr.get_or_add_trPr().append(trHeight)
+        c0, c1 = row.cells
+        c0.width = Cm(4)
+        # Centrado vertical en ambas celdas
+        for cell in [c0, c1]:
+            tc = cell._tc
+            tcPr = tc.get_or_add_tcPr()
+            vAlign = OxmlElement("w:vAlign")
+            vAlign.set(qn("w:val"), "center")
+            tcPr.append(vAlign)
         p0 = c0.paragraphs[0]
         p0.alignment = WD_ALIGN_PARAGRAPH.LEFT
         r0 = p0.add_run(k)
-        set_font(r0, size=9, bold=True)
+        set_font(r0, size=10, bold=True)
         p1 = c1.paragraphs[0]
         p1.alignment = WD_ALIGN_PARAGRAPH.LEFT
         r1 = p1.add_run(v)
-        set_font(r1, size=9)
+        set_font(r1, size=10)
 
     add_paragraph(doc, space_before=6)
 
