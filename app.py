@@ -198,7 +198,7 @@ Participantes:
 Transcripción:
 {transcripcion[:100000]}"""
     msg = client.messages.create(
-        model="claude-sonnet-4-20250514", max_tokens=4000,
+        model="claude-sonnet-4-5", max_tokens=4000,
         messages=[{"role": "user", "content": prompt}]
     )
     text = msg.content[0].text.replace("```json", "").replace("```", "").strip()
