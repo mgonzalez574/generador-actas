@@ -201,7 +201,7 @@ Empresa que elabora el acta: {empresa}
 Transcripción:
 {transcripcion[:100000]}"""
     msg = client.messages.create(
-        model="claude-sonnet-4-5", max_tokens=4000,
+        model="claude-sonnet-4-6", max_tokens=4000,
         messages=[{"role": "user", "content": prompt}]
     )
     text = msg.content[0].text.replace("```json", "").replace("```", "").strip()
@@ -226,7 +226,7 @@ Participantes:
 Transcripción:
 {transcripcion[:100000]}"""
     msg = client.messages.create(
-        model="claude-sonnet-4-5", max_tokens=4000,
+        model="claude-sonnet-4-6", max_tokens=4000,
         messages=[{"role": "user", "content": prompt}]
     )
     text = msg.content[0].text.replace("```json", "").replace("```", "").strip()
