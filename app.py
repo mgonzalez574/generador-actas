@@ -94,7 +94,7 @@ def build_docx(acta, participantes, empresa, elaborado_por):
 
     # Tabla de encabezado
     tabla = doc.add_table(rows=5, cols=2)
-    tabla.style = "Table Normal"
+    tabla.style = "Normal Table"
     campos = [
         ("Empresa:", empresa),
         ("Fecha:", acta.get("fecha") or "No determinada"),
