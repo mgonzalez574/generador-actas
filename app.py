@@ -10,7 +10,7 @@ from docx.oxml import OxmlElement
 
 # ── Configuración ──────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Generador de Actas", layout="centered")
-EMPRESAS = ["ESTILO GOURMET", "MUNDIPRODUCTOS"]
+EMPRESAS = ["ESTILO GOURMET", "MUNDIPRODUCTOS", "PERSONA U OTRA"]
 client = anthropic.Anthropic(api_key=st.secrets["ANTHROPIC_API_KEY"])
 
 # ── Helpers DOCX ───────────────────────────────────────────────────────────────
@@ -201,7 +201,7 @@ Empresa que elabora el acta: {empresa}
 Transcripción:
 {transcripcion[:100000]}"""
     msg = client.messages.create(
-        model="claude-sonnet-4-6", max_tokens=4000,
+        model="claude-sonnet-4-6", max_tokens=8000,
         messages=[{"role": "user", "content": prompt}]
     )
     text = msg.content[0].text.replace("```json", "").replace("```", "").strip()
@@ -226,7 +226,7 @@ Participantes:
 Transcripción:
 {transcripcion[:100000]}"""
     msg = client.messages.create(
-        model="claude-sonnet-4-6", max_tokens=4000,
+        model="claude-sonnet-4-6", max_tokens=8000,
         messages=[{"role": "user", "content": prompt}]
     )
     text = msg.content[0].text.replace("```json", "").replace("```", "").strip()
